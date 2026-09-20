@@ -1,0 +1,75 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f4f8;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.container {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    max-width: 450px;
+    width: 100%;
+    box-sizing: border-box;
+}
+h2 {
+    text-align: center;
+    color: #0056b3;
+    font-size: 22px;
+    margin-top: 0;
+    margin-bottom: 25px;
+}
+input[type="text"], input[type="tel"], input[type="email"], input[type="file"] {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0 20px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+label {
+    font-weight: bold;
+    color: #333;
+    font-size: 14px;
+}
+.btn {
+    width: 100%;
+    padding: 14px;
+    background: #0056b3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.btn:hover { background: #004494; }
+.btn:disabled { background: #999; cursor: not-allowed; }
+
+/* ID Card Styles */
+.id-card {
+    display: none;
+    margin-top: 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+    background: #ffffff;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+.id-card img {
+    width: 150px;
+    height: 150px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 4px solid #0056b3;
+    margin-bottom: 15px;
+}
+.id-card h2 { margin: 0 0 15px 0; color: #1a202c; font-size: 26px; }
+.id-card p { margin: 8px 0; color: #4a5568; font-size: 16px; text-align: left; border-bottom: 1px solid #edf2f7; padding-bottom: 8px; }

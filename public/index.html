@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MZYS RUMUOMASI 2026 YOUTH WEEK REGISTRATION</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h2>MZYS RUMUOMASI 2026 YOUTH WEEK REGISTRATION</h2>
+    
+    <!-- Registration Form -->
+    <form id="regForm">
+        <input type="text" id="fullName" name="fullName" placeholder="Full Name" required>
+        <input type="text" id="chapter" name="chapter" placeholder="MZYS Chapter (District)" required>
+        <input type="tel" id="phone" name="phone" placeholder="Phone Number" required>
+        <input type="email" id="email" name="email" placeholder="Email Address" required>
+        
+        <label for="picture">Upload Picture (Selfie or Gallery):</label>
+        <input type="file" id="picture" name="picture" accept="image/*" required>
+        
+        <button type="submit" class="btn" id="submitBtn">Register Now</button>
+    </form>
+
+    <!-- Success Screen (Hidden by default) -->
+    <div id="successScreen" style="display: none; text-align: center; margin-top: 20px;">
+        <h3 style="color: #28a745;">Registration Successful!</h3>
+        <p>You have been assigned to: <strong id="assignedGroup" style="font-size: 1.2em;"></strong></p>
+        <p>Please screenshot your entry barcode below:</p>
+        <div id="qrcode" style="display: flex; justify-content: center; margin: 20px 0;"></div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('regForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.innerText = "Registering...";
+        submitBtn.disabled = true;
+
+        // Package the form data, including the image file
+        const formData = new FormData(this);
+
+        try {
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                // Hide form, show success screen
+                document.getElementById('regForm').style.display = 'none';
+                document.getElementById('successScreen').style.display = 'block';
+                document.getElementById('assignedGroup').innerText = result.group;
+
+                // Generate QR Code containing ONLY the User ID
+                new QRCode(document.getElementById("qrcode"), {
+                    text: result.userId,
+                    width: 200,
+                    height: 200
+                });
+            } else {
+                alert(result.error);
+                submitBtn.innerText = "Register Now";
+                submitBtn.disabled = false;
+            }
+        } catch (error) {
+            alert("An error occurred. Please try again.");
+            submitBtn.innerText = "Register Now";
+            submitBtn.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>

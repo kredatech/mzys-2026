@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Scanner - MZYS RUMUOMASI 2026</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+
+<div class="container">
+    <h2 style="color: #d9534f;">Admin Entry Scanner</h2>
+    
+    <div id="reader" style="width: 100%;"></div>
+    
+    <!-- Attendee ID Card -->
+    <div id="attendeeCard" class="id-card">
+        <img id="displayPic" src="" alt="Attendee">
+        <h2 id="displayName">Name</h2>
+        <p><strong>District (Chapter):</strong> <span id="displayChapter"></span></p>
+        <p><strong>Phone:</strong> <span id="displayPhone"></span></p>
+        <p><strong>Email:</strong> <span id="displayEmail"></span></p>
+        <button class="btn" onclick="resetScanner()" style="margin-top: 15px;">Scan Next Attendee</button>
+    </div>
+</div>
+
+<script>
+    let html5QrcodeScanner;
+
+    function startScanner() {
+        document.getElementById('attendeeCard').style.display = 'none';
+        
+        html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
+            
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    }
+
+    async function onScanSuccess(decodedText) {
+        // Stop scanning to prevent multiple popups
+        html5QrcodeScanner.clear();
+
+        // decodedText is the userId. Let's fetch their data from the backend.
+        try {
+            const response = await fetch(`/api/user/${decodedText}`);
+            const result = await response.json();
+
+            if (result.success) {
+                const user = result.user;
+                document.getElementById('displayName').innerText = user.fullName;
+                document.getElementById('displayChapter').innerText = user.chapter;
+                document.getElementById('displayPhone').innerText = user.phone;
+                document.getElementById('displayEmail').innerText = user.email;
+                document.getElementById('displayPic').src = user.pictureUrl;
+
+                document.getElementById('attendeeCard').style.display = 'block';
+            } else {
+                alert("Invalid Barcode or User Not Found!");
+                startScanner(); // restart on fail
+            }
+        } catch (error) {
+            alert("Network error. Check connection to server.");
+            startScanner();
+        }
+    }
+
+    function onScanFailure(error) { /* Ignore background scan errors */ }
+
+    function resetScanner() {
+        startScanner();
+    }
+
+    // Start scanner on load
+    window.onload = startScanner;
+</script>
+</body>
+</html>
