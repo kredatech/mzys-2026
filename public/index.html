@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Add this line in your <head> section -->
+<script src="https://js.paystack.co/v1/inline.js"></script> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MZYS RUMUOMASI 2026 YOUTH WEEK REGISTRATION</title>
@@ -25,6 +27,30 @@
         <button type="submit" class="btn" id="submitBtn">Register Now</button>
     </form>
 
+    <!-- NEW SUPPORT SECTION -->
+    <hr style="margin: 35px 0; border: 0; border-top: 2px dashed #ccc;">
+    
+    <div id="supportSection" style="text-align: center;">
+        <h3 style="color: #28a745; margin-bottom: 5px;">❤️ Support the Youth Week</h3>
+        <p style="font-size: 14px; color: #555; margin-bottom: 20px;">Your freewill donations help us make MZYS 2026 a massive success!</p>
+        
+        <!-- Option A: Direct Bank Transfer Details -->
+        <div style="background: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 15px; text-align: left;">
+            <strong style="color:#333;">Manual Bank Transfer:</strong><br>
+            <span style="color: #0056b3; font-weight: bold; font-size: 18px;">6789976545342</span><br>
+            Bank: <strong>Polaris Bank</strong><br>
+            Account Name: <strong>MZYS Rumuomasi</strong>
+        </div>
+
+        <!-- Option B: Paystack Online Gateway -->
+        <p style="font-size: 14px; font-weight: bold; color: #333; margin-bottom: 10px;">Or pay instantly online:</p>
+        
+        <input type="number" id="donationAmount" placeholder="Enter Amount (₦)" min="100" style="width: 100%; margin-bottom: 10px; padding: 12px; border: 1px solid #ccc; border-radius: 8px;">
+        <input type="email" id="donationEmail" placeholder="Your Email (for receipt)" style="width: 100%; margin-bottom: 15px; padding: 12px; border: 1px solid #ccc; border-radius: 8px;">
+        
+        <button type="button" class="btn" style="background: #28a745;" onclick="payWithPaystack()">Donate Online Securely 🔒</button>
+    </div>
+  
     <!-- Success Screen (Hidden by default) -->
     <div id="successScreen" style="display: none; text-align: center; margin-top: 20px;">
         <h3 style="color: #28a745;">Registration Successful!</h3>
@@ -75,6 +101,37 @@
             submitBtn.disabled = false;
         }
     });
+    // --- PAYSTACK PAYMENT FUNCTION ---
+    function payWithPaystack() {
+        const amount = document.getElementById('donationAmount').value;
+        const email = document.getElementById('donationEmail').value;
+
+        if (!amount || !email) {
+            alert("Please enter a donation amount and your email address.");
+            return;
+        }
+
+        let handler = PaystackPop.setup({
+            key: 'pk_test_2995ebe72c1d79a9dc8e6d38fb81af28c3fa5e30, // You will replace this!
+            email: email,
+            amount: amount * 100, // Paystack calculates in kobo, so multiply by 100
+            currency: 'NGN',
+            ref: 'MZYS_' + Math.floor((Math.random() * 1000000000) + 1), // Generates a random receipt number
+            
+            callback: function(response) {
+                // This happens when the payment is successful
+                alert('God bless you! Your support was successful. Reference: ' + response.reference);
+                document.getElementById('donationAmount').value = '';
+                document.getElementById('donationEmail').value = '';
+            },
+            onClose: function() {
+                // This happens if they close the payment window without paying
+                alert('Payment window closed.');
+            }
+        });
+
+        handler.openIframe();
+    }
 </script>
 </body>
 </html>
