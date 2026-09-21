@@ -98,51 +98,76 @@
 </div>
 
 <script>
-    <script>
-    // --- DIGITAL COUNTDOWN CLOCK LOGIC ---
-    // Safe, Cross-Browser Date Format: (Year, Month[0-indexed, 9=Oct], Day, Hour, Min, Sec)
-    const countdownDate = new Date(2026, 9, 31, 23, 59, 59).getTime();
+  // --- 40-DAY DIGITAL COUNTDOWN CLOCK ---
+    // Wait for the HTML to fully load before starting the timer
+    document.addEventListener("DOMContentLoaded", function() {
+        
+        // Check if we already started the 40-day countdown for this user
+        let countdownDate = localStorage.getItem("mzys_countdown_end");
 
-    // Wrap the math in a function so we can run it immediately
-    function updateTimer() {
-        const now = new Date().getTime();
-        const distance = countdownDate - now;
-
-        // If the deadline has passed
-        if (distance < 0) {
-            clearInterval(timerInterval);
-            document.getElementById("countdown-timer").style.display = "none";
-            document.getElementById("countdown-title").style.display = "none";
-            document.getElementById("expiredMessage").style.display = "block";
-            document.getElementById("countdown-container").style.background = "#d9534f"; 
+        if (!countdownDate) {
+            // If this is their first visit, set the deadline exactly 40 days from right now
+            const now = new Date().getTime();
+            const fortyDaysInMilliseconds = 40 * 24 * 60 * 60 * 1000;
+            countdownDate = now + fortyDaysInMilliseconds;
             
-            const submitBtn = document.getElementById("submitBtn");
-            if (submitBtn) {
-                submitBtn.innerText = "Registration Closed";
-                submitBtn.disabled = true;
-                submitBtn.style.background = "#999";
-            }
-            return;
+            // Save this exact end date in their browser
+            localStorage.setItem("mzys_countdown_end", countdownDate);
         }
 
-        // Calculate time remaining
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        // Convert it to a number
+        countdownDate = parseInt(countdownDate);
 
-        // Update the HTML
-        document.getElementById("days").innerText = days < 10 ? "0" + days : days;
-        document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
-        document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
-        document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
-    }
+        function updateTimer() {
+            const now = new Date().getTime();
+            const distance = countdownDate - now;
 
-    // 1. Call it immediately so it doesn't freeze on 00 for the first second
-    updateTimer();
-    
-    // 2. Then set it to loop every 1 second
-    const timerInterval = setInterval(updateTimer, 1000);
+            // If the 40 days are up
+            if (distance < 0) {
+                clearInterval(timerInterval);
+                
+                const timerElement = document.getElementById("countdown-timer");
+                const titleElement = document.getElementById("countdown-title");
+                const msgElement = document.getElementById("expiredMessage");
+                const containerElement = document.getElementById("countdown-container");
+                const submitBtn = document.getElementById("submitBtn");
+
+                // Double check the elements exist before changing them
+                if(timerElement) timerElement.style.display = "none";
+                if(titleElement) titleElement.style.display = "none";
+                if(msgElement) msgElement.style.display = "block";
+                if(containerElement) containerElement.style.background = "#d9534f";
+                
+                if (submitBtn) {
+                    submitBtn.innerText = "Registration Closed";
+                    submitBtn.disabled = true;
+                    submitBtn.style.background = "#999";
+                }
+                return;
+            }
+
+            // Calculate days, hours, minutes, seconds
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Update the HTML only if the elements exist
+            if(document.getElementById("days")) {
+                document.getElementById("days").innerText = days < 10 ? "0" + days : days;
+                document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
+                document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+                document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
+            }
+        }
+
+        // Run immediately to prevent "00" lag
+        updateTimer();
+        
+        // Loop every 1 second
+        const timerInterval = setInterval(updateTimer, 1000);
+    });
+
     document.getElementById('regForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         
